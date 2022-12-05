@@ -3,39 +3,15 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 )
 
-type assignment struct {
-	start int
-	end   int
-}
-
-func assignmentOverlap(a1 assignment, a2 assignment) bool {
-	if a2.start >= a1.start && a2.end <= a1.end {
+func overlaps(a1 assignment, a2 assignment) bool {
+	if (a2.start <= a1.end && a2.end >= a1.start) ||
+		(a1.start <= a2.end && a1.end >= a2.start) {
 		return true
 	}
 	return false
-}
-
-func parseRange(s string) assignment {
-	start := strings.Split(s, "-")[0]
-	end := strings.Split(s, "-")[1]
-
-	startNum, err := strconv.ParseInt(start, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	endNum, err := strconv.ParseInt(end, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	return assignment{
-		start: int(startNum),
-		end:   int(endNum),
-	}
 }
 
 func main() {
@@ -45,8 +21,8 @@ func main() {
 	}
 
 	lines := strings.Split(string(content), "\n")
-
 	var count int
+
 	for _, l := range lines {
 		if l == "" {
 			continue
@@ -57,10 +33,9 @@ func main() {
 		first := parseRange(firstRange)
 		second := parseRange(secondRange)
 
-		if assignmentOverlap(first, second) || assignmentOverlap(second, first) {
+		if overlaps(first, second) || overlaps(second, first) {
 			count++
 		}
-
 	}
 
 	fmt.Println(count)
