@@ -6,17 +6,42 @@ import (
 	"strings"
 )
 
-func runeToPriority(r rune) int32 {
-	if r >= 97 && r <= 122 {
-		// lower case
-		return r - 97 + 1
+type groupIndex map[rune]*struct {
+	g1 bool
+	g2 bool
+	g3 bool
+}
 
+func (g groupIndex) add(gr int, c rune) {
+	if _, ok := g[c]; !ok {
+		g[c] = &struct {
+			g1 bool
+			g2 bool
+			g3 bool
+		}{}
 	}
-	if r >= 65 && r <= 90 {
-		// upper case
-		return r - 65 + 27
+	if gr == 0 {
+		g[c].g1 = true
 	}
-	return 0
+
+	if gr == 1 {
+		g[c].g2 = true
+	}
+
+	if gr == 2 {
+		g[c].g3 = true
+	}
+}
+
+func (g groupIndex) shareds() int {
+	var total int
+	for c, data := range g {
+		if data.g1 && data.g2 && data.g3 {
+			total += int(runeToPriority(c))
+		}
+	}
+
+	return total
 }
 
 func main() {
@@ -24,31 +49,28 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	lines := strings.Split(string(content), "\n")
-	totalPriority := int32(0)
+
+	var total int
+	var current []string
 
 	for _, line := range lines {
 		if line == "" {
 			continue
 		}
-		firstCompartment := line[0 : len(line)/2]
-		secondCompartment := line[len(line)/2:]
-		sharedP := map[rune]struct{}{}
-
-		for _, c1 := range firstCompartment {
-			for _, c2 := range secondCompartment {
-				if c1 == c2 {
-					sharedP[c1] = struct{}{}
+		current = append(current, line)
+		if len(current) == 3 {
+			gi := groupIndex{}
+			for idx, l := range current {
+				for _, c := range l {
+					gi.add(idx, c)
 				}
 			}
+			total += gi.shareds()
+			current = []string{}
 		}
-		total := int32(0)
-		for p := range sharedP {
-			total += runeToPriority(p)
-		}
-		totalPriority += total
-
 	}
 
-	fmt.Println(totalPriority)
+	fmt.Println(total)
 }
