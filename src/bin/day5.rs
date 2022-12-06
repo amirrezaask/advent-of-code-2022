@@ -41,7 +41,7 @@ impl Command {
     fn execute1(&self, s: &mut HashMap<usize, Stack>) {
         let from = s.get_mut(&self.from).unwrap();
         let mut elems: Vec<char> = Vec::new();
-        for i in 0..self.count {
+        for _ in 0..self.count {
             let elem = from.pop();
             elems.push(elem);
         }
