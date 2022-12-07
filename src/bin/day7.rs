@@ -100,6 +100,9 @@ fn add_file_size(sizes: &mut HashMap<Vec<String>, u64>, mut current: Vec<String>
     }
 }
 
+const TOTAL_SPACE: u64 = 70_000_000;
+const UPDATE_SPACE: u64 = 30_000_000;
+
 fn main() -> Result<()> {
     let input = include_str!("input7.prod");
 
@@ -136,13 +139,30 @@ fn main() -> Result<()> {
     }
     let mut sum = 0;
     for (k,v) in &sizes {
+        // println!("{:?}: {}", k, v);
         if v <= &100000 {
             sum += v;
         }
     }
 
-    println!("sizes: {:?}", sizes);
-    println!("sum: {}", sum);
+    println!("part 1: {}", sum);
+
+    let root_size = sizes.get(&vec![]).unwrap();
+    // println!("root size: {}", root_size);
+    let needs = UPDATE_SPACE - (TOTAL_SPACE - root_size);
+    // println!("needs: {}", needs);
+
+    let mut min = (vec![], root_size);
+
+    for (k,v) in &sizes {
+        if v >= &needs && v <= min.1 {
+            min = (k.to_vec(), v);
+        }
+    }
+
+    println!("part 2: {}", min.1);
+
+
 
     return Ok(());
 }
