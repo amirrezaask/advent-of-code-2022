@@ -2,13 +2,13 @@ fn scenic_score(grid: &Vec<Vec<u32>>, pos: (usize, usize)) -> u32 {
     let height = grid[pos.0][pos.1];
     let (left, right) = grid[pos.0].split_at(pos.1);
     let mut left = left.to_vec();
-    let mut right = right[1..].to_vec();
+    let right = right[1..].to_vec();
 
     let column = grid.iter().map(|row| row[pos.1]).collect::<Vec<u32>>();
 
     let (up, down) = column.split_at(pos.0);
     let mut up = up.to_vec();
-    let mut down = down[1..].to_vec();
+    let down = down[1..].to_vec();
     let mut scenic: Vec<u32> = vec![];
 
 
